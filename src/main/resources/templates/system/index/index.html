@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="utf-8">
 	<title>layui后台管理模板 2.0</title>
@@ -10,7 +10,7 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="format-detection" content="telephone=no">
-	<link rel="icon" href="favicon.ico">
+	<link rel="icon" href="/resources/favicon.ico">
 	<link rel="stylesheet" href="/resources/layui/css/layui.css" media="all" />
 	<link rel="stylesheet" href="/resources/css/index.css" media="all" />
 </head>
@@ -57,7 +57,7 @@
 						<a href="javascript:;"><i class="seraph icon-lock"></i><cite>锁屏</cite></a>
 					</li>
 					<li class="layui-nav-item" id="userInfo">
-						<a href="javascript:;"><img src="/resources/images/face.jpg" class="layui-nav-img userAvatar" width="35" height="35"><cite class="adminName">枇杷晚翠</cite></a>
+						<a href="javascript:;"><img src="/resources/images/face.jpg" class="layui-nav-img userAvatar" width="35" height="35"><cite class="adminName" th:text="${session.user.name}">枇杷晚翠</cite></a>
 						<dl class="layui-nav-child">
 							<dd><a href="javascript:;" data-url="/resources/page/user/userInfo.html"><i class="seraph icon-ziliao" data-icon="icon-ziliao"></i><cite>个人资料</cite></a></dd>
 							<dd><a href="javascript:;" data-url="/resources/page/user/changePwd.html"><i class="seraph icon-xiugai" data-icon="icon-xiugai"></i><cite>修改密码</cite></a></dd>
@@ -74,7 +74,7 @@
 		<div class="layui-side layui-bg-black">
 			<div class="user-photo">
 				<a class="img" title="我的头像" ><img src="/resources/images/face.jpg" class="userAvatar"></a>
-				<p>你好！<span class="userName">枇杷晚翠</span>, 欢迎登录</p>
+				<p>你好！<span class="userName" th:text="${session.user.name}">枇杷晚翠</span>, 欢迎登录</p>
 			</div>
 			<!-- 搜索 -->
 			<div class="layui-form component">
@@ -111,7 +111,7 @@
 				</ul>
 				<div class="layui-tab-content clildFrame">
 					<div class="layui-tab-item layui-show">
-						<iframe src="page/main.html"></iframe>
+						<iframe src="/resources/page/main.html"></iframe>
 					</div>
 				</div>
 			</div>
@@ -134,7 +134,7 @@
 	<script>
 		var $,tab,dataStr,layer;
 		layui.config({
-			base : "js/"
+			base : "/resources/js/"
 		}).extend({
 			"bodyTab" : "bodyTab"
 		})
@@ -145,7 +145,7 @@
 			layer = parent.layer === undefined ? layui.layer : top.layer;
 			tab = layui.bodyTab({
 				openTabNum : "50",  //最大可打开窗口数量
-				url : "json/nav2.json" //获取菜单json地址
+				url : "/resources/json/nav2.json" //获取菜单json地址
 			});
 
 			//通过顶部菜单获取左侧二三级菜单   注：此处只做演示之用，实际开发中通过接口传参的方式获取导航数据
