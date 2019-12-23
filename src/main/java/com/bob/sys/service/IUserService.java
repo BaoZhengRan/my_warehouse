@@ -1,6 +1,6 @@
 package com.bob.sys.service;
 
-import com.bob.sys.domain.User;
+import com.bob.sys.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -10,6 +10,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  *
  */
 
-public interface UserService extends IService<User> {
+public interface IUserService extends IService<User> {
 
 }

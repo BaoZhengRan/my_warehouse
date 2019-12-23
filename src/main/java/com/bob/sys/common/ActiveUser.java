@@ -1,6 +1,6 @@
 package com.bob.sys.common;
 
-import com.bob.sys.domain.User;
+import com.bob.sys.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
