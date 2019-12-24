@@ -1,9 +1,9 @@
 package com.bob.sys.service.impl;
 
-import com.sxt.sys.entity.Permission;
-import com.sxt.sys.mapper.PermissionMapper;
-import com.sxt.sys.service.IPermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bob.sys.entity.Permission;
+import com.bob.sys.mapper.PermissionMapper;
+import com.bob.sys.service.IPermissionService;
 import org.springframework.stereotype.Service;
 
 /**

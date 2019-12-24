@@ -1,7 +1,7 @@
 package com.bob.sys.service;
 
-import com.sxt.sys.entity.Permission;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bob.sys.entity.Permission;
 
 /**
  * <p>

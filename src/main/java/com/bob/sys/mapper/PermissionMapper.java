@@ -1,7 +1,7 @@
 package com.bob.sys.mapper;
 
-import com.sxt.sys.entity.Permission;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bob.sys.entity.Permission;
 
 /**
  * <p>
