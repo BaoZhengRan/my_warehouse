@@ -6,6 +6,7 @@ import com.bob.sys.entity.Permission;
 import com.bob.sys.entity.User;
 import com.bob.sys.service.IPermissionService;
 import com.bob.sys.vo.PermissionVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +23,7 @@ import java.util.List;
 @RequestMapping("/menu")
 public class MenuController {
 
+    @Autowired
     private IPermissionService permissionService;
 
     @RequestMapping("loadIndexLeftMenuJson")
