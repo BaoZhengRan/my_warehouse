@@ -31,4 +31,13 @@ public class SystemController {
         return "/system/index/deskManager";
     }
 
+    /*
+     *跳转到日志管理
+     */
+    @RequestMapping("toLogLoginManager")
+    public String toLogLoginManager(){
+        return "system/logLogin/logLoginManager";
+    }
+
+
 }
