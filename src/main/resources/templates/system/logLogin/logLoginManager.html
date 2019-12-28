@@ -21,36 +21,38 @@
     <legend>查询条件</legend>
 </fieldset>
 <blockquote class="layui-elem-quote">
-    <form action="" method="post" id="searchFrom" lay-filter="searchFrom" class="layui-form layui-form-pane">
-        <div class="layui-form-item">
-            <div class="layui-inline">
+    <form action="" method="post" id="searchForm" lay-filter="searchForm" class="layui-form layui-form-pane">
+        <div class="layui-form-item ">
+
+            <div class="layui-inline ">
                 <label class="layui-form-label">登录名称</label>
                 <div class="layui-input-inline">
                     <input type="text" name="loginname"  autocomplete="off" class="layui-input">
                 </div>
             </div>
-            <div class="layui-inline">
+            <div class="layui-inline ">
                 <label class="layui-form-label">登录地址</label>
                 <div class="layui-input-inline">
                     <input type="text" name="loginip"   autocomplete="off" class="layui-input">
                 </div>
             </div>
-            <div class="layui-inline">
+            <div class="layui-inline  ">
                 <label class="layui-form-label">开始时间</label>
                 <div class="layui-input-inline">
-                    <input type="tel" name="startTime" id="startTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                    <input type="text" name="startTime" readonly="readonly" id="startTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
                 </div>
             </div>
-            <div class="layui-inline">
+            <div class="layui-inline ">
                 <label class="layui-form-label">结束时间</label>
                 <div class="layui-input-inline">
-                    <input type="tel" name="endTime" id="endTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                    <input type="text" name="endTime" readonly="readonly" id="endTime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
                 </div>
             </div>
-            <div class="layui-form-item">
-                <div class="layui-input-block" style="text-align: center;">
-                    <button type="button" class="layui-btn" lay-filter="doSearch"><span class="layui-icon layui-icon-search"></span>查询</button>
-                    <button type="button" class="layui-btn layui-btn-warm" ><span class="layui-icon layui-icon-refresh"></span>重置</button>
+
+            <div class="layui-form-item layui-fluid">
+                <div class="layui-input-block" style="text-align: center;margin: 5px auto">
+                    <button type="button" class="layui-btn" lay-submit="" lay-filter="doSearch"><span class="layui-icon layui-icon-search"></span>查询</button>
+                    <button type="reset" class="layui-btn layui-btn-warm" ><span class="layui-icon layui-icon-refresh"></span>重置</button>
                 </div>
             </div>
 
@@ -62,21 +64,72 @@
 
 <!--数据表格开始-->
 <div>
-    <table class="layui-hide" id="LogLoginTable" lay-filter="LogLoginTable"></table>
+    <table class="layui-hide" id="LogLoginTable" lay-filter="LogLoginTable">
     <div id="LogLoginToolBar"  style="display:none;">
-        <button type="button" class="layui-btn layui-btn-warm" ><span class="layui-icon layui-icon-delete"></span>批量删除</button>
+        <button type="button" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>批量删除</button>
 
     </div>
 
     <div id="LogLoginRowBar"  style="display:none;">
+        <button type="button" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>删除</button>
 
     </div>
-
+    </table>
 </div>
 
 <!--数据表格结束-->
 
 <script type="text/javascript" src="/resources/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['jquery','form','table','layer','laydate'],function(){
+        var $ = layui.jquery;
+        var form = layui.form;
+        var table = layui.table;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        //初始化时间选择器
+        laydate.render({
+            elem:'#startTime',
+            type:'datetime'
+        })
+        laydate.render({
+            elem:'#endTime',
+            type:'datetime'
+        })
+
+        //加载数据
+        var tableIns = table.render({
+            elem: '#LogLoginTable'
+            ,url:'/sys/logLogin/loadAllLogLogin'
+            ,toolbar: '#LogLoginToolBar' //开启头部工具栏，并为其绑定左侧模板
+            ,title: '用户登陆数据表'
+            ,height:'full-220'
+            ,page: true
+            ,cols: [ [
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'id', title:'ID',align:'center'}
+                ,{field:'loginname', title:'登陆名称',align:'center'}
+                ,{field:'loginip', title:'登陆地址',align:'center'}
+                ,{field:'logintime', title:'登陆时间',align:'center'}
+                ,{fixed: 'right', title:'操作', toolbar: '#LogLoginRowBar',align:'center'}
+            ] ]
+
+        });
+        //模糊查询
+
+        form.on("submit(doSearch)",function (data) {
+            tableIns.reload({
+                where:data.field,
+                page:{
+                    curr:1
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+
 
 </body>
 </html>
