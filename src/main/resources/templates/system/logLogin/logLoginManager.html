@@ -66,12 +66,12 @@
 <div>
     <table class="layui-hide" id="LogLoginTable" lay-filter="LogLoginTable">
     <div id="LogLoginToolBar"  style="display:none;">
-        <button type="button" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>批量删除</button>
+        <button type="button" lay-event="batchDelete" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>批量删除</button>
 
     </div>
 
     <div id="LogLoginRowBar"  style="display:none;">
-        <button type="button" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>删除</button>
+        <button type="button" lay-event="deleteItem" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>删除</button>
 
     </div>
     </table>
@@ -126,6 +126,70 @@
             });
             return false;
         });
+
+        //监听工具条的事件
+        table.on('tool(LogLoginTable)',function (obj) {
+            var data = obj.data;
+            switch(obj.event){
+                case 'deleteItem':
+                    deleteItem(data);
+                    break;
+            };
+        })
+
+        //监听行工具条的事件
+        table.on('toolbar(LogLoginTable)',function (obj) {
+            switch(obj.event){
+                case 'batchDelete':
+                    BatchDelete();
+                    break;
+            };
+        })
+
+        //删除
+        function deleteItem(data) {
+            layer.confirm('确定删除?', {icon: 3, title:'提示'},function(index){
+                $.post("/sys/logLogin/deleteLogLogin",{id:data.id},function(res){
+                    if(res.code==200){
+                        tableIns.reload();
+                    }
+                    layer.msg(res.msg);
+                })
+                layer.close(index);
+            });
+        }
+
+        //批量删除
+        function BatchDelete(){
+            var checkStatus = table.checkStatus('LogLoginTable');
+            var dataLength = checkStatus.data.length;
+            if (dataLength>0){
+                layer.confirm('确定删除?',{icon: 3, title:'提示'},function(index){
+                    var data = checkStatus.data; //获取选中行的数据
+                    var ids="";
+                    $.each(data,function(index,item){
+                        if (index==0){
+                            ids+="ids="+item.id;
+                        }else {
+                            ids+="&ids="+item.id;
+                        }
+                    })
+                    $.post("/sys/logLogin/batchDeleteLogLogin",ids,function (res) {
+                        if (res.code==200){
+                            tableIns.reload();
+                        }
+                        layer.msg(index);
+                    })
+
+                    layer.close(index);
+                });
+            }else {
+                layer.alert("请选中操作行");
+            }
+
+
+        }
+
 
     });
 </script>
