@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>日志管理</title>
+    <title>公告管理</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
@@ -25,15 +25,15 @@
         <div class="layui-form-item ">
 
             <div class="layui-inline ">
-                <label class="layui-form-label">登录名称</label>
+                <label class="layui-form-label">公告名称</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="loginname"  autocomplete="off" class="layui-input">
+                    <input type="text" name="title"  autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-inline ">
-                <label class="layui-form-label">登录地址</label>
+                <label class="layui-form-label">操作人员</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="loginip"   autocomplete="off" class="layui-input">
+                    <input type="text" name="opername"   autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-inline  ">
@@ -64,16 +64,16 @@
 
 <!--数据表格开始-->
 <div>
-    <table class="layui-hide" id="LogLoginTable" lay-filter="LogLoginTable">
-    <div id="LogLoginToolBar"  style="display:none;">
-        <button type="button" lay-event="batchDelete" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>批量删除</button>
+    <table class="layui-hide" id="NoticeTable" lay-filter="NoticeTable">
+        <div id="NoticeToolBar"  style="display:none;">
+            <button type="button" lay-event="batchDelete" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>批量删除</button>
 
-    </div>
+        </div>
 
-    <div id="LogLoginRowBar"  style="display:none;">
-        <button type="button" lay-event="deleteItem" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>删除</button>
+        <div id="NoticeRowBar"  style="display:none;">
+            <button type="button" lay-event="deleteItem" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>删除</button>
 
-    </div>
+        </div>
     </table>
 </div>
 
@@ -102,7 +102,7 @@
 <!-- ============== 修改和添加弹出层 结束 ===============-->
 
 
-
+<!-- ============== script代码 ============== -->
 
 <script type="text/javascript" src="/resources/layui/layui.js"></script>
 <script type="text/javascript">
@@ -132,19 +132,19 @@
 
         //加载数据
         var tableIns = table.render({
-            elem: '#LogLoginTable'
-            ,url:'/sys/logLogin/loadAllLogLogin'
-            ,toolbar: '#LogLoginToolBar' //开启头部工具栏，并为其绑定左侧模板
-            ,title: '用户登陆数据表'
+            elem: '#NoticeTable'
+            ,url:'/sys/notice/loadAllNotice'
+            ,toolbar: '#NoticeToolBar' //开启头部工具栏，并为其绑定左侧模板
+            ,title: '用户公告数据表'
             ,height:'full-220'
             ,page: true
             ,cols: [ [
                 {type: 'checkbox', fixed: 'left'}
                 ,{field:'id', title:'ID',align:'center'}
-                ,{field:'loginname', title:'登陆名称',align:'center'}
-                ,{field:'loginip', title:'登陆地址',align:'center'}
-                ,{field:'logintime', title:'登陆时间',align:'center'}
-                ,{fixed: 'right', title:'操作', toolbar: '#LogLoginRowBar',align:'center'}
+                ,{field:'title', title:'公告名称',align:'center'}
+                ,{field:'opername', title:'操作人员',align:'center'}
+                ,{field:'createtime', title:'修改时间',align:'center'}
+                ,{fixed: 'right', title:'操作', toolbar: '#NoticeRowBar',align:'center'}
             ] ]
 
         });
@@ -161,7 +161,7 @@
         });
 
         //监听工具条的事件
-        table.on('tool(LogLoginTable)',function (obj) {
+        table.on('tool(NoticeTable)',function (obj) {
             var data = obj.data;
             switch(obj.event){
                 case 'deleteItem':
@@ -171,7 +171,7 @@
         })
 
         //监听行工具条的事件
-        table.on('toolbar(LogLoginTable)',function (obj) {
+        table.on('toolbar(NoticeTable)',function (obj) {
             switch(obj.event){
                 case 'batchDelete':
                     BatchDelete();
@@ -200,10 +200,10 @@
 
 
 
-       //删除
+        //删除
         function deleteItem(data) {
             layer.confirm('确定删除?', {icon: 3, title:'提示'},function(index){
-                $.post("/sys/logLogin/deleteLogLogin",{id:data.id},function(res){
+                $.post("/sys/notice/deleteNotice",{id:data.id},function(res){
                     if(res.code==200){
                         tableIns.reload();
                     }
@@ -215,7 +215,7 @@
 
         //批量删除
         function BatchDelete(){
-            var checkStatus = table.checkStatus('LogLoginTable');
+            var checkStatus = table.checkStatus('NoticeTable');
             var dataLength = checkStatus.data.length;
             if (dataLength>0){
                 layer.confirm('确定删除?',{icon: 3, title:'提示'},function(index){
@@ -228,7 +228,7 @@
                             ids+="&ids="+item.id;
                         }
                     })
-                    $.post("/sys/logLogin/batchDeleteLogLogin",ids,function (res) {
+                    $.post("/sys/notice/batchDeleteNotice",ids,function (res) {
                         if (res.code==200){
                             tableIns.reload();
                         }

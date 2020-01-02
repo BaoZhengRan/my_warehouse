@@ -39,5 +39,9 @@ public class SystemController {
         return "system/logLogin/logLoginManager";
     }
 
+    @RequestMapping("toNoticeManager")
+    public String toNoticeManager(){
+        return "/system/notice/noticeManager.html";
+    }
 
 }
