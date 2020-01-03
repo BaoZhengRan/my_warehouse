@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bob.sys.common.DataGridView;
 import com.bob.sys.common.ResultObj;
+import com.bob.sys.common.WebUtils;
 import com.bob.sys.entity.Notice;
+import com.bob.sys.entity.User;
 import com.bob.sys.service.INoticeService;
 import com.bob.sys.vo.NoticeVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * <p>
@@ -49,6 +52,39 @@ public class NoticeController {
         return new DataGridView(page.getTotal(),page.getRecords());
     }
 
+
+
+    /**
+     * 添加通知
+     */
+    @RequestMapping("addNotice")
+    public ResultObj addNotice(NoticeVo noticeVo){
+        try{
+            noticeVo.setCreatetime(new Date());
+            //user里有这么多东西。。。。
+            User user = (User)WebUtils.getSession().getAttribute("user");
+            System.out.println("==================================================");
+            System.out.println(user.getName());
+            System.out.println(user.getPwd());
+            System.out.println(user.getSalt());
+            System.out.println(user.getSex());
+            System.out.println(user.getLoginname());
+            System.out.println("==================================================");
+            noticeVo.setOpername(user.getName());
+
+            this.noticeService.save(noticeVo);
+            return ResultObj.ADD_SUCCESS;
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultObj.ADD_ERROR;
+        }
+    }
+
+
+
+    /**
+     * 删除通知
+     */
     @RequestMapping("deleteNotice")
     public ResultObj deleteNotice(Integer id){
         try{

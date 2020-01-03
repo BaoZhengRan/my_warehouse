@@ -62,41 +62,53 @@
 </blockquote>
 <!--查询条件结束-->
 
-<!--数据表格开始-->
+<!-- ====================== 数据表格开始 ====================== -->
 <div>
     <table class="layui-hide" id="NoticeTable" lay-filter="NoticeTable">
         <div id="NoticeToolBar"  style="display:none;">
+            <button type="button" lay-event="openAddLayer" class="layui-btn layui-btn-normal layui-btn-sm" ><span class="layui-icon layui-icon-add-1"></span>添加公告</button>
             <button type="button" lay-event="batchDelete" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>批量删除</button>
 
         </div>
 
         <div id="NoticeRowBar"  style="display:none;">
+            <button type="button" lay-event="deleteItem" class="layui-btn  layui-btn-sm" ><span class="layui-icon layui-icon-read"></span>查看</button>
+            <button type="button" lay-event="deleteItem" class="layui-btn layui-btn-normal layui-btn-sm" ><span class="layui-icon layui-icon-edit"></span>修改</button>
             <button type="button" lay-event="deleteItem" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>删除</button>
 
         </div>
     </table>
 </div>
 
-<!--数据表格结束-->
+<!-- ====================== 数据表格结束 ====================== -->
 
 <!-- ============== 修改和添加弹出层 开始 ===============-->
-<!--<div style ="display: none;" id="addOrUpdateDiv">-->
-<!--    <form action="" method="post" class="layui-form layui-form-pane" id="dataForm" lay-filter="dataForm">-->
-<!--        <div class="layui-form-item">-->
-<!--            <label class="layui-form-label">公告标题</label>-->
-<!--            <div class="layui-input-block">-->
-<!--                <input type="hidden" name="id">-->
-<!--                <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="layui-form-item">-->
-<!--            <label class="layui-form-label">公告内容</label>-->
-<!--            <div class="layui-input-block">-->
-<!--                <textarea class="layui-textarea " name="content" lay-verify="required" id="content"></textarea>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </form>-->
-<!--</div>-->
+<div style ="display: none;" id="addOrUpdateDiv">
+    <form action="" method="post" class="layui-form layui-form-pane" id="dataForm" lay-filter="dataForm" style="padding: 5px;">
+        <div class="layui-form-item" >
+            <label class="layui-form-label">公告标题</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="id">
+                <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">公告内容</label>
+            <div class="layui-input-block">
+                <textarea  class="layui-textarea " name="content"  id="content"></textarea>
+
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block" STYLE="text-align:right;" >
+                <button type="button" lay-submit="" lay-filter="doSubmit" class="layui-btn layui-btn-normal layui-btn-lg" >
+                    <span class="layui-icon layui-icon-upload-circle"></span>提交</button>
+                <button type="reset" class="layui-btn layui-btn-normal layui-btn-lg" >
+                    <span class="layui-icon "></span>清空</button>
+            </div>
+        </div>
+    </form>
+</div>
 
 
 <!-- ============== 修改和添加弹出层 结束 ===============-->
@@ -125,8 +137,8 @@
             type:'datetime'
         })
 
-        // //初始化富文本
-        // var editIndex = layedit.build('LAY_demo_editor');
+        //初始化富文本
+        var editIndex = layedit.build('content');
 
 
 
@@ -160,7 +172,7 @@
             return false;
         });
 
-        //监听工具条的事件
+        //监听行工具条的事件
         table.on('tool(NoticeTable)',function (obj) {
             var data = obj.data;
             switch(obj.event){
@@ -170,34 +182,62 @@
             };
         })
 
-        //监听行工具条的事件
+        //监听头工具条的事件
         table.on('toolbar(NoticeTable)',function (obj) {
             switch(obj.event){
                 case 'batchDelete':
                     BatchDelete();
                     break;
-                // case 'add':
-                //     openAddLayer();
-                //     break;
+                case 'openAddLayer':
+                    openAddLayer();
+                    break;
             };
         })
 
-        // //打开添加弹出层
-        // var mainIndex;
-        // function openAddLayer() {
-        //      mainIndex = layer.open({
-        //         type:1
-        //          ,content:$("#addOrUpdateDiv")
-        //          ,area:['800px','600px']
-        //          ,title:'发布公告'
-        //          ,success:function () {
-        //             //初始化富文本
-        //          }
-        //
-        //      })
-        // }
 
+        var mainIndex;
+        var url;
+        //打开添加弹出层
+        function openAddLayer() {
+             mainIndex = layer.open({
+                type:1
+                 ,content:$("#addOrUpdateDiv")
+                 ,area:['800px','600px']
+                 ,title:'发布公告'
+                 ,success:function () {
+                    //初始化富文本
+                     layedit.setContent("editIndex","");
+                     url="/sys/notice/addNotice";
+                    / console.log("打开成功")
+                 }
 
+             })
+        }
+
+        //添加公告
+         form.on("submit(doSubmit)",function (data) {
+            data.field.content=layedit.getContent(editIndex);//获得富文本编辑器的内容
+                        //console.log(data.elem); //得到select原始DOM对象
+                        // console.log(data.field);//当前容器的全部表单字段，名值对形式：{name: value}
+              if (data.field.content.length<1){
+                layer.msg("公告内容不得为空");
+            }else{
+                // console.log("到提交的时候了=============")
+                $.post(url
+                    ,data.field
+                    ,function (res) {
+                        if(res.code == 200 ){
+                            tableIns.reload();
+                            layer.close(mainIndex); //再执行关闭
+                        }
+                        layer.msg(res.msg);
+                    });
+                mainIndex.close;
+            }
+
+            return false;//阻止表单跳转。如果需要表单跳转，去掉这段即可。
+
+        })
 
 
         //删除
@@ -208,7 +248,7 @@
                         tableIns.reload();
                     }
                     layer.msg(res.msg);
-                })
+                });
                 layer.close(index);
             });
         }
