@@ -63,13 +63,13 @@ public class NoticeController {
             noticeVo.setCreatetime(new Date());
             //user里有这么多东西。。。。
             User user = (User)WebUtils.getSession().getAttribute("user");
-            System.out.println("==================================================");
-            System.out.println(user.getName());
-            System.out.println(user.getPwd());
-            System.out.println(user.getSalt());
-            System.out.println(user.getSex());
-            System.out.println(user.getLoginname());
-            System.out.println("==================================================");
+//            System.out.println("==================================================");
+//            System.out.println(user.getName());
+//            System.out.println(user.getPwd());
+//            System.out.println(user.getSalt());
+//            System.out.println(user.getSex());
+//            System.out.println(user.getLoginname());
+//            System.out.println("==================================================");
             noticeVo.setOpername(user.getName());
 
             this.noticeService.save(noticeVo);
@@ -77,6 +77,25 @@ public class NoticeController {
         }catch (Exception e){
             e.printStackTrace();
             return ResultObj.ADD_ERROR;
+        }
+    }
+
+
+
+    /**
+     *修改公告
+     * @param noticeVo
+     * @return
+     */
+    @RequestMapping("updateNotice")
+    public ResultObj updateNotice(NoticeVo noticeVo){
+        try{
+            //好像只能这样写
+            this.noticeService.updateById(noticeVo);
+            return ResultObj.UPDATE_SUCCESS;
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultObj.UPDATE_ERROR;
         }
     }
 

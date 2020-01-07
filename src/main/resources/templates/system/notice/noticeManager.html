@@ -72,8 +72,8 @@
         </div>
 
         <div id="NoticeRowBar"  style="display:none;">
-            <button type="button" lay-event="deleteItem" class="layui-btn  layui-btn-sm" ><span class="layui-icon layui-icon-read"></span>查看</button>
-            <button type="button" lay-event="deleteItem" class="layui-btn layui-btn-normal layui-btn-sm" ><span class="layui-icon layui-icon-edit"></span>修改</button>
+            <button type="button" lay-event="checkItem" class="layui-btn  layui-btn-sm" ><span class="layui-icon layui-icon-read"></span>查看</button>
+            <button type="button" lay-event="modify" class="layui-btn layui-btn-normal layui-btn-sm" ><span class="layui-icon layui-icon-edit"></span>修改</button>
             <button type="button" lay-event="deleteItem" class="layui-btn layui-btn-warm layui-btn-sm" ><span class="layui-icon layui-icon-delete"></span>删除</button>
 
         </div>
@@ -95,23 +95,23 @@
         <div class="layui-form-item">
             <label class="layui-form-label">公告内容</label>
             <div class="layui-input-block">
-                <textarea  class="layui-textarea " name="content"  id="content"></textarea>
+                <textarea  style="display: none;"    name="content"  id="content"></textarea>
 
             </div>
         </div>
         <div class="layui-form-item">
-            <div class="layui-input-block" STYLE="text-align:right;" >
+            <div class="layui-input-block" STYLE="text-align:center;" >
                 <button type="button" lay-submit="" lay-filter="doSubmit" class="layui-btn layui-btn-normal layui-btn-lg" >
                     <span class="layui-icon layui-icon-upload-circle"></span>提交</button>
-                <button type="reset" class="layui-btn layui-btn-normal layui-btn-lg" >
-                    <span class="layui-icon "></span>清空</button>
+<!--                <button type="reset" class="layui-btn layui-btn-normal layui-btn-lg" >-->
+<!--                    <span class="layui-icon layui-icon-refresh"></span>重置</button>-->
             </div>
         </div>
     </form>
 </div>
 
 
-<!-- ============== 修改和添加弹出层 结束 ===============-->
+    <!-- =======  修改和添加弹出层 结束 ===============-->
 
 
 <!-- ============== script代码 ============== -->
@@ -137,8 +137,8 @@
             type:'datetime'
         })
 
-        //初始化富文本
-        var editIndex = layedit.build('content');
+        //富文本
+        var editIndex;
 
 
 
@@ -179,6 +179,9 @@
                 case 'deleteItem':
                     deleteItem(data);
                     break;
+                case 'modify':
+                    modifyLayer(data);
+                    break
             };
         })
 
@@ -205,20 +208,22 @@
                  ,area:['800px','600px']
                  ,title:'发布公告'
                  ,success:function () {
-                    //初始化富文本
+                    //初始化富文本 标题
+                     $("#dataForm")[0].reset();
+                     editIndex = layedit.build('content');
                      layedit.setContent("editIndex","");
                      url="/sys/notice/addNotice";
-                    / console.log("打开成功")
+                    // console.log("打开成功")
                  }
 
              })
         }
 
-        //添加公告
+        //添加与修改公告
          form.on("submit(doSubmit)",function (data) {
-            data.field.content=layedit.getContent(editIndex);//获得富文本编辑器的内容
-                        //console.log(data.elem); //得到select原始DOM对象
-                        // console.log(data.field);//当前容器的全部表单字段，名值对形式：{name: value}
+             // console.log(data.field);//当前容器的全部表单字段，名值对形式：{name: value}
+             data.field.content=layedit.getContent(editIndex);//获得富文本编辑器的内容
+             //console.log(data.field.content+"============");
               if (data.field.content.length<1){
                 layer.msg("公告内容不得为空");
             }else{
@@ -238,6 +243,33 @@
             return false;//阻止表单跳转。如果需要表单跳转，去掉这段即可。
 
         })
+
+        //修改公告弹出层
+        function modifyLayer(data) {
+            mainIndex = layer.open({
+                type:1
+                ,content:$("#addOrUpdateDiv")
+                ,area:['800px','600px']
+                ,title:'发布公告'
+                ,success:function () {
+                    //初始化富文本
+                    editIndex = layedit.build('content');
+                    //需要得到保存的文本？？？
+                    form.val('dataForm',data);
+                    // console.log("正在获取表格中的数据");
+                    // console.log(data);
+                    // console.log(data.content);
+
+                    layedit.setContent(editIndex,data.content);
+                    // layedit.sync(editIndex);
+                    // console.log(layedit.getContent(editIndex));
+                    url="/sys/notice/updateNotice";
+                    // console.log("打开成功")
+                }
+
+            })
+        }
+
 
 
         //删除
@@ -283,6 +315,9 @@
 
 
         }
+
+
+
 
 
     });
