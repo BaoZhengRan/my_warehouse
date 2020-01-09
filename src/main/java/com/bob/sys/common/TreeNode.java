@@ -1,5 +1,6 @@
 package com.bob.sys.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -14,12 +15,21 @@ import java.util.List;
 @Data
 public class TreeNode {
     private Integer id;
+    @JsonProperty("parentId")
     private Integer pid;
     private String type;
     private String title;
     private String href;
     private Boolean spread;
     private List<TreeNode> children = new ArrayList<TreeNode>();
+
+    public TreeNode(Integer id, Integer pid, String title, Boolean spread){
+        super();
+        this.id = id;
+        this.pid = pid;
+        this.title = title;
+        this.spread = spread;
+    }
 
     public TreeNode(Integer id, Integer pid, String type, String title, String href, Boolean spread) {
         this.id = id;
