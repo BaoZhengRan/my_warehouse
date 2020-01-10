@@ -32,6 +32,14 @@ public class DeptController {
     @Autowired
     private IDeptService deptService;
 
+
+
+
+
+
+
+
+
     /**
      * 加载部门树
      * @return
@@ -39,7 +47,7 @@ public class DeptController {
     @RequestMapping("loadDeptTreeJson")
     public DataGridView loadDeptTreeJson(){
         List<Dept> list = this.deptService.list();
-        List<TreeNode> treeNodes = new ArrayList<>();
+        List<TreeNode> treeNodes = new ArrayList<TreeNode>();
 
         for(Dept dept:list){
            Boolean spread = dept.getOpen()==1?true:false;
