@@ -13,6 +13,8 @@
     <link rel="icon" href="/resources/favicon.ico">
     <link rel="stylesheet" href="/resources/layui/css/layui.css" media="all" />
     <link rel="stylesheet" href="/resources/css/public.css" media="all" />
+    <link rel="stylesheet" href="/resources/layui_ext/dtree/dtree.css">
+    <link rel="stylesheet" href="/resources/layui_ext/dtree/font/dtreefont.css">
 
 </head>
 <body class="childrenBody">
@@ -80,26 +82,26 @@
 
 <!-- ============== 修改和添加弹出层 开始 ===============-->
 <div style ="display: none;" id="addOrUpdateDiv">
+
     <form action="" method="post" class="layui-form layui-form-pane" id="dataForm" lay-filter="dataForm" style="padding: 5px;">
         <div class="layui-form-item" >
-            <label class="layui-form-label">上级部门名称</label>
+            <label class="layui-form-label">上级部门</label>
+            <div class="layui-input-block">
+                <input style="display: none" >
+                <ul id="deptTree" class="dtree" data-id="0" ></ul>
+            </div>
+        </div>
+        <div class="layui-form-item" >
+            <label class="layui-form-label">部门名称</label>
             <div class="layui-input-block">
                 <input type="hidden" name="id">
                 <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item" >
-            <label class="layui-form-label">部门名称</label>
+            <label class="layui-form-label">部门备注</label>
             <div class="layui-input-block">
-
-                <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item" >
-            <label class="layui-form-label">部门标记</label>
-            <div class="layui-input-block">
-
-                <input type="text" name="remark" lay-verify="required" autocomplete="off" placeholder="" class="layui-input">
+                <textarea class="layui-textarea"  name="remark"  id="remark"></textarea>
             </div>
         </div>
         <div class="layui-form-item" >
@@ -110,11 +112,20 @@
         </div>
 
         <div class="layui-form-item" >
+            <label class="layui-form-label">是否展开</label>
+            <div class="layui-input-inline">
+                <input type="radio" name="spread" lay-verify="required" value="1" title="展开" autocomplete="off" placeholder="" class="layui-input"  checked="checked" >
+                <input type="radio" name="spread" lay-verify="required" value="0" title="不展开" autocomplete="off" placeholder="" class="layui-input">
+            </div>
+
             <label class="layui-form-label">是否可用</label>
-            <div class="layui-input-block">
-                <input type="radio" name="available" lay-verify="required" autocomplete="off" placeholder="" class="layui-input">
+            <div class="layui-input-inline">
+                <input type="radio" name="available" lay-verify="required" value="1" title="可用" autocomplete="off" placeholder="" class="layui-input"  checked="checked" >
+                <input type="radio" name="available" lay-verify="required" value="0" title="不可用" autocomplete="off" placeholder="" class="layui-input">
             </div>
         </div>
+
+
         <div class="layui-form-item">
             <div class="layui-input-block" STYLE="text-align:center;" >
                 <button type="button" lay-submit="" lay-filter="doSubmit" class="layui-btn layui-btn-normal layui-btn-lg" >
@@ -140,14 +151,21 @@
 
 <script type="text/javascript" src="/resources/layui/layui.js"></script>
 <script type="text/javascript">
-    layui.use(['jquery','form','table','layer',],function(){
+    //提升数据表格的作用域，因为底下还有一个reloadTable方法
+    var tableIns;
+
+    layui.extend({
+        dtree: '/resources/layui_ext/dtree/dtree'   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+    }).use(['jquery','form','table','layer','dtree'],function(){
         var $ = layui.jquery;
         var form = layui.form;
         var table = layui.table;
         var layer = layui.layer;
+        var dtree = layui.dtree;
+
 
         //加载数据
-        var tableIns = table.render({
+        tableIns = table.render({
             elem: '#DeptTable'
             ,url:'/sys/dept/loadAllDept'
             ,toolbar: '#DeptToolBar' //开启头部工具栏，并为其绑定左侧模板
@@ -157,19 +175,25 @@
             ,cols: [ [
                 {type: 'checkbox', fixed: 'left'}
                 ,{field:'id', title:'ID',align:'center',width:'50'}
-                ,{field:'pid', title:'上级部门',align:'center',width:'50'}
-                ,{field:'title', title:'部门名称',align:'center',width:'130'}
-                ,{field:'open', title:'是否打开',align:'center',width:'100'}
+                ,{field:'pid', title:'上级部门',align:'center',width:'120'}
+                ,{field:'title', title:'部门名称',align:'center',width:'120'}
+                ,{field:'open', title:'是否打开',align:'center',width:'120'
+                    ,templet:function (d) {
+                        return d.open == 1?"<font color='red'>打开</font>":"<font color='blue'>关闭</font>";
+                    }}
                 ,{field:'remark', title:'标记',align:'center',width:'150'}
-                ,{field:'address', title:'部门地址',align:'center',width:'100'}
-                ,{field:'available', title:'是否可用',align:'center',width:'100'}
+                ,{field:'address', title:'部门地址',align:'center',width:'120'}
+                ,{field:'available', title:'是否可用',align:'center',width:'120'
+                    ,templet:function (d) {
+                        return d.available == 1?"可用":"不可用";
+                    }}
                 ,{field:'createtime', title:'创建时间',align:'center',width:'250'}
-                ,{fixed: 'right', title:'操作', toolbar: '#DeptRowBar',align:'center',width:"250"}
+                ,{fixed: 'right', title:'操作', toolbar: '#DeptRowBar',align:'center',width:'320'}
             ] ]
 
         });
-        //模糊查询
 
+        //模糊查询
         form.on("submit(doSearch)",function (data) {
             tableIns.reload({
                 where:data.field,
@@ -208,6 +232,21 @@
             };
         })
 
+        //弹层中的下拉树
+        var selectTree = dtree.renderSelect({
+            elem: "#deptTree",
+            width: "100%", // 可以在这里指定树的宽度来填满div
+            dataStyle: "layuiStyle", //使用layui风格的数据格式
+            dataFormat: "list",     //配置data的风格为list
+            response:{message:"msg",statusCode:0},  //修改response中返回数据的定义
+            url: "/sys/dept/loadDeptTreeJson" // 使用url加载（可与data加载同时存在）
+        });
+
+        // 绑定节点点击
+        dtree.on("node('deptTree')" ,function(obj){
+            layer.msg(JSON.stringify(obj.param));
+        });
+
 
         var mainIndex;
         var url;
@@ -219,10 +258,8 @@
                 ,area:['800px','600px']
                 ,title:'发布部门'
                 ,success:function () {
-                    //初始化富文本 标题
+
                     $("#dataForm")[0].reset();
-                    editIndex = layedit.build('content');
-                    layedit.setContent("editIndex","");
                     url="/sys/dept/addDept";
                     // console.log("打开成功")
                 }
@@ -232,28 +269,24 @@
 
         //添加与修改部门
         form.on("submit(doSubmit)",function (data) {
-            // console.log(data.field);//当前容器的全部表单字段，名值对形式：{name: value}
-            data.field.content=layedit.getContent(editIndex);//获得富文本编辑器的内容
-            //console.log(data.field.content+"============");
-            if (data.field.content.length<1){
-                layer.msg("部门内容不得为空");
-            }else{
-                // console.log("到提交的时候了=============")
-                $.post(url
-                    ,data.field
-                    ,function (res) {
-                        if(res.code == 200 ){
-                            tableIns.reload();
-                            layer.close(mainIndex); //再执行关闭
-                        }
-                        layer.msg(res.msg);
-                    });
-                mainIndex.close;
-            }
+            alert(JSON.stringify(data));
 
-            return false;//阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                // $.post(url
+                //     ,data.field
+                //     ,function (res) {
+                //         if(res.code == 200 ){
+                //             tableIns.reload();
+                //             layer.close(mainIndex); //再执行关闭
+                //         }
+                //         layer.msg(res.msg);
+                //     });
+                // mainIndex.close;
+                // return false;//阻止表单跳转。如果需要表单跳转，去掉这段即可。
 
-        })
+        });
+
+
+
 
         //修改部门弹出层
         function modifyLayer(data) {
@@ -263,22 +296,14 @@
                 ,area:['800px','600px']
                 ,title:'发布部门'
                 ,success:function () {
-                    //初始化富文本
-                    editIndex = layedit.build('content');
+
                     //需要得到保存的文本？？？
                     form.val('dataForm',data);
-                    // console.log("正在获取表格中的数据");
-                    // console.log(data);
-                    // console.log(data.content);
-
-                    layedit.setContent(editIndex,data.content);
-                    // layedit.sync(editIndex);
-                    // console.log(layedit.getContent(editIndex));
                     url="/sys/dept/updateDept";
                     // console.log("打开成功")
                 }
 
-            })
+            });
         }
 
         //查看层
@@ -344,12 +369,17 @@
 
 
         }
-
-
-
-
-
     });
+
+    //给其他页面刷新当前页面数据表格的方法
+    function reloadTable(id) {
+        tableIns.reload({
+            where:{
+                id:id
+            }
+        });
+    }
+
 </script>
 
 

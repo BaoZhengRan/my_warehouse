@@ -33,13 +33,6 @@ public class DeptController {
     private IDeptService deptService;
 
 
-
-
-
-
-
-
-
     /**
      * 加载部门树
      * @return
@@ -67,7 +60,7 @@ public class DeptController {
         queryWrapper.like(!StringUtils.isEmpty(vo.getTitle()),"title",vo.getTitle() );
         queryWrapper.like(!StringUtils.isEmpty(vo.getAddress()), "address",vo.getAddress());
         queryWrapper.like(!StringUtils.isEmpty(vo.getRemark()),"remark",vo.getRemark());
-        queryWrapper.eq(vo.getId()!=null,"id",vo.getId());
+        queryWrapper.eq(vo.getId()!=null,"id",vo.getId()).or().eq(vo.getId()!=null, "pid",vo.getId());
         queryWrapper.orderByAsc("ordernum");
         this.deptService.page(page,queryWrapper);
         return new DataGridView(page.getTotal(),page.getRecords());
